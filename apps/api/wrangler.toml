@@ -1,0 +1,30 @@
+name = "playstation-sale-tracker-api"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Free-tier friendly: no KV/D1/R2 required. Supabase Postgres is the only
+# persistent store; secrets below are the only required bindings.
+
+# Run the price-refresh job every 6 hours. Adjust cadence to taste - more
+# frequent runs cost more Worker CPU time and (if you wire a real exchange
+# rate provider) more upstream API calls.
+[triggers]
+crons = ["0 */6 * * *"]
+
+[vars]
+# Non-secret configuration. Secrets (below) are set via `wrangler secret put`.
+ENVIRONMENT = "development"
+CORS_ALLOWED_ORIGIN = "http://localhost:5173"
+
+# ---------------------------------------------------------------------------
+# Secrets (do NOT put values here - use `wrangler secret put <NAME>`):
+#   SUPABASE_URL
+#   SUPABASE_SERVICE_ROLE_KEY
+#   ADMIN_API_TOKEN
+#   EXCHANGE_RATE_API_KEY   (optional - only if you wire a real provider)
+# ---------------------------------------------------------------------------
+
+[env.production]
+name = "playstation-sale-tracker-api"
+vars = { ENVIRONMENT = "production", CORS_ALLOWED_ORIGIN = "https://your-project.pages.dev" }
